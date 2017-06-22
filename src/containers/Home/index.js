@@ -1,5 +1,6 @@
 import React from 'react';
 import * as customPropTypes from 'customPropTypes';
+import styled from 'styled-components';
 import Helmet from 'react-helmet';
 import IndexHeader from 'components/IndexHeader';
 import cookie from 'react-cookie';
@@ -12,7 +13,24 @@ import SurahsList from 'components/Home/SurahsList';
 import QuickSurahs from 'components/Home/QuickSurahs';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
 
-const styles = require('./style.scss');
+export const Title = styled.h4`
+  padding: 20px 0;
+  font-size: 14px;
+  margin-top: 20px;
+
+  span {
+    margin: 0;
+    line-height: 2;
+    a {
+      padding: 0 15px;
+    }
+  }
+
+  &:last-child {
+    margin-top: 25px;
+    border-bottom: solid 2px rgba(0,0,0,.05)
+  }
+`;
 
 const Home = (props) => {
   debug('component:Index', 'Render');
@@ -23,7 +41,7 @@ const Home = (props) => {
     <div className="index-page">
       <Helmet title="The Noble Quran - القرآن الكريم" titleTemplate="%s" />
       <IndexHeader />
-      <div className={`container ${styles.list}`}>
+      <div className="container">
         <div className="row">
           <div className="col-md-10 col-md-offset-1">
             {lastVisit &&
@@ -32,12 +50,12 @@ const Home = (props) => {
                 verse={lastVisit.verseId}
               />}
             <QuickSurahs />
-            <h4 className={`text-muted ${styles.title}`}>
+            <Title className="text-muted">
               <LocaleFormattedMessage
                 id="surah.index.heading"
                 defaultMessage="SURAHS (CHAPTERS)"
               />
-            </h4>
+            </Title>
             <div className="row">
               <SurahsList
                 chapters={Object.values(props.chapters).slice(0, 38)}
