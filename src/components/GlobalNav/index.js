@@ -1,16 +1,29 @@
 /* global window */
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as customPropTypes from 'customPropTypes';
-import { connect } from 'react-redux';
-import Link from 'react-router/lib/Link';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 
 import LocaleSwitcher from 'components/LocaleSwitcher';
 
 import debug from 'helpers/debug';
+import { NAVBAR_EVENTS } from '../../events';
 
-const styles = require('./style.scss');
+const scrolledStyle = {
+  boxShadow:
+    '0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.2)'
+};
+
+const StyledNav = styled(Nav)`
+  @media (max-width: $screen-sm) {
+    & > li {
+      display: inline-block;
+    }
+  }
+`;
 
 class GlobalNav extends Component {
   state = {
@@ -41,11 +54,15 @@ class GlobalNav extends Component {
   };
 
   isHome() {
-    return this.props.location.pathname === '/';
+    if (this.props.location) {
+      return this.props.location.pathname === '/';
+    }
+
+    return true;
   }
 
   renderRightControls() {
-    const { user, rightControls } = this.props;
+    const { rightControls } = this.props;
 
     return (
       rightControls || [
@@ -54,7 +71,7 @@ class GlobalNav extends Component {
             href="https://quranicaudio.com/"
             target="_blank"
             rel="noopener noreferrer"
-            data-metrics-event-name="Sites:Audio"
+            {...NAVBAR_EVENTS.CLICK.QURANICAUDIO_LINK.PROPS}
           >
             Audio
           </a>
@@ -64,7 +81,7 @@ class GlobalNav extends Component {
             href="http://salah.com/"
             target="_blank"
             rel="noopener noreferrer"
-            data-metrics-event-name="Sites:Salah"
+            {...NAVBAR_EVENTS.CLICK.SALAH_LINK.PROPS}
           >
             Salah
           </a>
@@ -74,22 +91,12 @@ class GlobalNav extends Component {
             href="http://sunnah.com/"
             target="_blank"
             rel="noopener noreferrer"
-            data-metrics-event-name="Sites:Sunnah"
+            {...NAVBAR_EVENTS.CLICK.SUNNAH_LINK.PROPS}
           >
             Sunnah
           </a>
         </li>,
-        <LocaleSwitcher />,
-        user
-          ? <li>
-            <Link
-              to="/profile"
-              data-metrics-event-name="IndexHeader:Link:Profile"
-            >
-              {user.firstName || user.name}
-            </Link>
-          </li>
-          : <noscript />
+        <LocaleSwitcher />
       ]
     );
   }
@@ -100,33 +107,38 @@ class GlobalNav extends Component {
 
     return (
       <Navbar
-        className={`montserrat ${this.state.scrolled && styles.scrolled}`}
+        className="montserrat"
+        style={this.state.scrolled ? scrolledStyle : {}}
         fixedTop={!isStatic}
         fluid
-        static={isStatic}
       >
         <button
           type="button"
           className="navbar-toggle collapsed"
           onClick={handleSidebarToggle}
+          {...NAVBAR_EVENTS.CLICK.SIDEBAR_TOGGLE.PROPS}
         >
           <span className="sr-only">Toggle navigation</span>
           <span className="icon-bar" />
           <span className="icon-bar" />
           <span className="icon-bar" />
         </button>
-        <Nav className={styles.nav}>
-          {!this.isHome() &&
+        <StyledNav>
+          {!this.isHome() && (
             <li>
-              <Link to="/"><i className="ss-icon ss-home" /></Link>
-            </li>}
-          {this.isHome() &&
-            <LocaleSwitcher className="visible-xs-inline-block" />}
+              <Link to="/" {...NAVBAR_EVENTS.CLICK.HOME_LINK.PROPS}>
+                <i className="ss-icon ss-home" />
+              </Link>
+            </li>
+          )}
+          {this.isHome() && (
+            <LocaleSwitcher className="visible-xs-inline-block" />
+          )}
           {leftControls &&
             leftControls.map((control, index) =>
               React.cloneElement(control, { key: index })
             )}
-        </Nav>
+        </StyledNav>
         <Nav pullRight className="hidden-xs hidden-sm">
           {this.renderRightControls().map((control, index) =>
             React.cloneElement(control, { key: index })
@@ -143,7 +155,6 @@ GlobalNav.propTypes = {
   rightControls: PropTypes.arrayOf(PropTypes.element),
   handleSidebarToggle: PropTypes.func.isRequired,
   isStatic: PropTypes.bool.isRequired,
-  user: customPropTypes.userType,
   location: customPropTypes.location
 };
 
@@ -151,6 +162,4 @@ GlobalNav.defaultProps = {
   isStatic: false
 };
 
-export default connect(state => ({
-  user: state.auth.user
-}))(GlobalNav);
+export default GlobalNav;

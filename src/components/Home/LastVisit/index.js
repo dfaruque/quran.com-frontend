@@ -1,31 +1,36 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import * as customPropTypes from 'customPropTypes';
 import debug from 'helpers/debug';
-import Link from 'react-router/lib/Link';
+import { Link } from 'react-router-dom';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
+import Title from 'components/Home/Title';
 
-const styles = require('containers/Home/style.scss');
-
-const LastVisit = (props) => {
+const LastVisit = ({ chapter, verse }) => {
   debug('component:Index', 'LastVisit');
-  if (!props.chapter) return false;
+  if (!chapter) return false;
 
   return (
-    <div>
-      <h4 className={`text-muted ${styles.title}`}>
-        <LocaleFormattedMessage id="surah.index.continue" defaultMessage="Continue" />{' '}
-        <Link to={`/${props.chapter.chapterNumber}/${props.verse}`}>
-          <span>
-            {props.chapter.nameSimple} ({props.chapter.chapterNumber}:{props.verse})
-          </span>
-        </Link>
-      </h4>
-    </div>
+    <Title muted>
+      <LocaleFormattedMessage
+        id="surah.index.continue"
+        defaultMessage="Continue"
+      />{' '}
+      <Link to={`/${chapter.chapterNumber}/${verse}`}>
+        <span>
+          {chapter.nameSimple} (
+          {chapter.chapterNumber}
+          :
+          {verse}
+          )
+        </span>
+      </Link>
+    </Title>
   );
 };
 
 LastVisit.propTypes = {
-  chapter: customPropTypes.surahType.isRequired,
+  chapter: customPropTypes.chapterType.isRequired,
   verse: PropTypes.number.isRequired
 };
 

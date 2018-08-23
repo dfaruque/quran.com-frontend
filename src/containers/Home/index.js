@@ -1,77 +1,124 @@
-import React from 'react';
-import * as customPropTypes from 'customPropTypes';
+import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import IndexHeader from 'components/IndexHeader';
-import cookie from 'react-cookie';
-import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
+import { asyncComponent } from 'react-async-component';
+import Tabs, { Tab } from 'quran-components/lib/Tabs';
+import Loader from 'quran-components/lib/Loader';
+import PropTypes from 'prop-types';
+
 import debug from 'helpers/debug';
-import { isAllLoaded, loadAll } from 'redux/actions/chapters.js';
-import LastVisit from 'components/Home/LastVisit';
-import SurahsList from 'components/Home/SurahsList';
-import QuickSurahs from 'components/Home/QuickSurahs';
+import ChaptersList from 'components/Home/ChaptersList';
+import * as customPropTypes from 'customPropTypes';
+
+import IndexHeader from 'components/IndexHeader';
+import QuickChapters from 'components/Home/QuickChapters';
+import Title from 'components/Home/Title';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
+import ComponentLoader from '../../components/ComponentLoader';
 
-const styles = require('./style.scss');
+const LoaderStyle = { position: 'relative', overflow: 'hidden' };
 
-const Home = (props) => {
-  debug('component:Index', 'Render');
+const JuzList = asyncComponent({
+  resolve: () =>
+    import(/* webpackChunkName: "JuzList" */ '../../components/Home/JuzList'),
+  LoadingComponent: ComponentLoader,
+});
 
-  const lastVisit = cookie.load('lastVisit') || null;
+class Home extends Component {
+  renderJuzList() {
+    const { chapters, juzs, loadingJuzs } = this.props;
 
-  return (
-    <div className="index-page">
-      <Helmet title="The Noble Quran - القرآن الكريم" titleTemplate="%s" />
-      <IndexHeader />
-      <div className={`container ${styles.list}`}>
+    if (loadingJuzs) {
+      return (
         <div className="row">
-          <div className="col-md-10 col-md-offset-1">
-            {lastVisit &&
-              <LastVisit
-                chapter={props.chapters[lastVisit.chapterId]}
-                verse={lastVisit.verseId}
-              />}
-            <QuickSurahs />
-            <h4 className={`text-muted ${styles.title}`}>
-              <LocaleFormattedMessage
-                id="surah.index.heading"
-                defaultMessage="SURAHS (CHAPTERS)"
-              />
-            </h4>
-            <div className="row">
-              <SurahsList
-                chapters={Object.values(props.chapters).slice(0, 38)}
-              />
-              <SurahsList
-                chapters={Object.values(props.chapters).slice(38, 76)}
-              />
-              <SurahsList
-                chapters={Object.values(props.chapters).slice(76, 114)}
-              />
+          <Loader isActive relative style={LoaderStyle} />
+        </div>
+      );
+    }
+
+    const juzList = Object.values(juzs);
+
+    return (
+      <div className="row">
+        <JuzList chapters={chapters} juzs={juzList.slice(0, 20)} />
+        <JuzList chapters={chapters} juzs={juzList.slice(20, 28)} />
+        <JuzList chapters={chapters} juzs={juzList.slice(28, 30)} />
+      </div>
+    );
+  }
+
+  renderChapterList() {
+    const { chapters, loadingChapters } = this.props;
+    const chaptersList = Object.values(chapters);
+
+    if (loadingChapters) {
+      return (
+        <div className="row">
+          <Loader isActive relative style={LoaderStyle} />
+        </div>
+      );
+    }
+
+    return (
+      <div className="row">
+        <ChaptersList chapters={chaptersList.slice(0, 38)} />
+        <ChaptersList chapters={chaptersList.slice(38, 76)} />
+        <ChaptersList chapters={chaptersList.slice(76, 114)} />
+      </div>
+    );
+  }
+
+  render() {
+    debug('component:Home', 'Render');
+
+    const chapterTitle = (
+      <Title className="text-muted">
+        <LocaleFormattedMessage
+          id="surah.index.heading"
+          defaultMessage="SURAHS (CHAPTERS)"
+        />
+      </Title>
+    );
+
+    const juzTitle = (
+      <Title className="text-muted">
+        <LocaleFormattedMessage id="juz.index.heading" defaultMessage="Juz" />
+      </Title>
+    );
+
+    return (
+      <div className="index-page">
+        <Helmet title="The Noble Quran - القرآن الكريم" titleTemplate="%s" />
+        <IndexHeader />
+        <div className="container">
+          <div className="row">
+            <div className="col-md-10 col-md-offset-1">
+              <QuickChapters />
+              <Tabs>
+                <Tab title={chapterTitle}>{this.renderChapterList()}</Tab>
+
+                <Tab title={juzTitle}>{this.renderJuzList()}</Tab>
+              </Tabs>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 Home.propTypes = {
-  chapters: customPropTypes.chapters.isRequired
+  chapters: customPropTypes.chapters.isRequired,
+  juzs: customPropTypes.juzs.isRequired,
+  loadingChapters: PropTypes.bool.isRequired,
+  loadingJuzs: PropTypes.bool.isRequired,
 };
 
-const AsyncHome = asyncConnect([
-  {
-    promise({ store: { getState, dispatch } }) {
-      if (!isAllLoaded(getState())) {
-        return dispatch(loadAll());
-      }
+const mapStateToProps = state => ({
+  loadingChapters: !state.chapters.loaded,
+  loadingJuzs: !state.juzs.loaded,
+  chapters: state.chapters.entities,
+  juzs: state.juzs.entities,
+});
 
-      return true;
-    }
-  }
-])(Home);
-
-export default connect(state => ({ chapters: state.chapters.entities }))(
-  AsyncHome
-);
+export default connect(mapStateToProps)(Home);

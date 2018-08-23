@@ -1,12 +1,14 @@
-import React, { Component, PropTypes } from 'react';
-import bindTooltip from 'utils/bindTooltip';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Tooltip } from 'react-tippy';
 import { zeroPad } from 'helpers/StringHelpers';
+import { buildAudioURL } from 'helpers/buildAudio';
 
 /* eslint-disable no-unused-vars */
 const CHAR_TYPE_WORD = 'word';
 const CHAR_TYPE_END = 'end';
 const CHAR_TYPE_PAUSE = 'pause';
-const CHAR_TYPE_RUB = 'rub';
+const CHAR_TYPE_RUB = 'rub-el-hizb';
 const CHAR_TYPE_SAJDAH = 'sajdah';
 
 class Word extends Component {
@@ -25,7 +27,7 @@ class Word extends Component {
   handleWordPlay = () => {
     const { word } = this.props;
     if (word.audio) {
-      const audio = new Audio(word.audio.url); // eslint-disable-line
+      const audio = new Audio(buildAudioURL(word.audio)); // eslint-disable-line
       audio.play();
     }
   };
@@ -37,7 +39,7 @@ class Word extends Component {
       audioActions,
       audioPosition,
       isPlaying,
-      isSearched
+      isSearched,
     } = this.props;
 
     if (isSearched || !word.audio) {
@@ -60,16 +62,17 @@ class Word extends Component {
       currentVerse,
       isPlaying,
       audioPosition,
-      useTextFont
+      useTextFont,
     } = this.props;
 
     let text;
     let spacer;
-    const highlight = currentVerse === word.verseKey && isPlaying
-      ? 'highlight'
-      : '';
-    const className = `${useTextFont ? 'text-' : ''}${word.className} ${word.charType} ${highlight} ${word.highlight ? word.highlight : ''}`;
-    const id = `word-${word.verseKey.replace(/:/, '-')}-${audioPosition}`;
+    const highlight =
+      currentVerse === word.verseKey && isPlaying ? 'highlight' : '';
+    const className = `${useTextFont ? 'text-' : ''}${word.className} ${
+      word.charType
+    } ${highlight} ${word.highlight ? word.highlight : ''}`;
+    const id = `word-${word.verseKey.replace(/:/, '-')}-${word.position}`;
 
     if (useTextFont) {
       if (word.charType === CHAR_TYPE_END) {
@@ -87,16 +90,16 @@ class Word extends Component {
 
     return (
       <span>
-        <b // eslint-disable-line
-          {...bindTooltip}
-          key={word.code}
-          id={id}
-          onDoubleClick={this.handleSegmentPlay}
-          onClick={this.handleWordPlay}
-          className={`${className} pointer`}
-          title={this.buildTooltip(word, tooltip)}
-          dangerouslySetInnerHTML={{ __html: text }}
-        />
+        <Tooltip arrow title={this.buildTooltip(word, tooltip)}>
+          <a // eslint-disable-line
+            key={word.code}
+            id={id}
+            onDoubleClick={this.handleSegmentPlay}
+            onClick={this.handleWordPlay}
+            className={`${className} pointer`}
+            dangerouslySetInnerHTML={{ __html: text }}
+          />
+        </Tooltip>
         <small
           dangerouslySetInnerHTML={{ __html: spacer }}
           style={{ letterSpacing: -15 }}
@@ -114,7 +117,7 @@ Word.propTypes = {
   currentVerse: PropTypes.string,
   isPlaying: PropTypes.bool,
   isSearched: PropTypes.bool,
-  useTextFont: PropTypes.bool // tmp change to compare text and code based rendering
+  useTextFont: PropTypes.bool, // tmp change to compare text and code based rendering
 };
 
 export default Word;

@@ -1,18 +1,32 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
-import Tooltip from 'react-bootstrap/lib/Tooltip';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
 
-const style = require('../style.scss');
+import SwitchToggle from 'quran-components/lib/Toggle';
+
+import { ControlButton, StyledPopover } from '../index';
 
 const ScrollButton = ({ shouldScroll, onScrollToggle }) => {
   const tooltip = (
-    <Tooltip id="scroll-button-tooltip" placement="bottom">
-      <LocaleFormattedMessage
-        id="player.scrollButtonTip"
-        defaultMessage="Automatically scrolls to the currently playing ayah on transitions..."
+    <StyledPopover
+      id="scroll-toggle-popoverr"
+      title={
+        <LocaleFormattedMessage
+          id="player.scrollButtonTip"
+          defaultMessage="Automatically scrolls to the currently playing ayah on transitions..."
+        />
+      }
+    >
+      {'  '}
+      <SwitchToggle
+        checked={shouldScroll}
+        onToggle={onScrollToggle}
+        id="scroll-toggle"
+        name="scroll-toggle"
+        flat
       />
-    </Tooltip>
+    </StyledPopover>
   );
 
   return (
@@ -20,16 +34,12 @@ const ScrollButton = ({ shouldScroll, onScrollToggle }) => {
       <OverlayTrigger
         overlay={tooltip}
         placement="top"
-        trigger={['hover', 'focus']}
+        trigger="click"
+        rootClose
       >
-        <a
-          tabIndex="-1"
-          className={`pointer ${style.buttons} ${shouldScroll ? style.scroll : ''}`}
-          onClick={onScrollToggle}
-          style={{ marginBottom: 0 }}
-        >
+        <ControlButton active={shouldScroll}>
           <i className="ss-icon ss-link" />
-        </a>
+        </ControlButton>
       </OverlayTrigger>
     </div>
   );

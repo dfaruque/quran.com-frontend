@@ -1,37 +1,116 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as customPropTypes from 'customPropTypes';
-import Link from 'react-router/lib/Link';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 import { connect } from 'react-redux';
 import Element from 'react-scroll/lib/components/Element';
-import Loadable from 'react-loadable';
+import { asyncComponent } from 'react-async-component';
 import ComponentLoader from 'components/ComponentLoader';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
 import Word from 'components/Word';
+import ShowAyahAndJuzMark from 'components/JuzMarker';
 import Translation from 'components/Translation';
+import FontText from 'components/FontText';
 import debug from 'helpers/debug';
 
-import { loadTafsirs } from 'redux/actions/media';
+import { loadTafsirs } from '../../redux/actions/media';
 
-const styles = require('./style.scss');
-
-const Copy = Loadable({
-  loader: () => import('components/Copy'),
-  LoadingComponent: ComponentLoader
+const Copy = asyncComponent({
+  resolve: () => import(/* webpackChunkName: "Copy" */ 'components/Copy'),
+  LoadingComponent: ComponentLoader,
 });
 
-const Share = Loadable({
-  loader: () => import('components/Share'),
-  LoadingComponent: ComponentLoader
+const Share = asyncComponent({
+  resolve: () => import(/* webpackChunkName: "Share" */ 'components/Share'),
+  LoadingComponent: ComponentLoader,
 });
+
+// TODO: Change this
+const Container = styled(Element)`
+  padding: 2.5% 0;
+  border-bottom: 1px solid rgba(${props => props.textMuted}, 0.5);
+
+  ${props => (props.highlight ? 'background-color: #F5FBF7;' : '')} .text-info {
+    color: ${props => props.theme.brandInfo};
+    &:hover {
+      color: ${props => props.theme.brandPrimary};
+    }
+  }
+`;
+
+const Label = styled.span`
+  padding: 0.65em 1.1em;
+  border-radius: 0;
+  display: inline-block;
+  margin-bottom: 15px;
+  font-weight: 300;
+  color: ${props => props.theme.textColor};
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+// TODO: Change this
+const StyledTranslation = styled.div`
+  h4 {
+    color: ${props => props.theme.brandPrimary};
+    margin-bottom: 5px;
+  }
+
+  h2 {
+    margin-top: 5px;
+    margin-bottom: 25px;
+  }
+`;
+
+const Controls = styled.div`
+  a {
+    margin-bottom: 15px;
+    display: block;
+    text-decoration: none;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:focus {
+      color: ${props => props.textMuted};
+    }
+  }
+  .label {
+    padding: 0.65em 1.1em;
+    border-radius: 0;
+    display: inline-block;
+    margin-bottom: 15px;
+    font-weight: 300;
+    color: ${props => props.theme.textColor};
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  @media (max-width: ${props => props.theme.screen.sm}) {
+    h4,
+    a {
+      display: inline-block;
+      margin: 0 10;
+    }
+
+    h4 {
+      margin: 0;
+    }
+
+    padding: 0;
+  }
+`;
 
 class Verse extends Component {
   shouldComponentUpdate(nextProps) {
     const conditions = [
       this.props.verse !== nextProps.verse,
-      this.props.bookmarked !== nextProps.bookmarked,
       this.props.tooltip !== nextProps.tooltip,
       this.props.currentWord !== nextProps.currentWord,
-      this.props.iscurrentVerse !== nextProps.iscurrentVerse
+      this.props.iscurrentVerse !== nextProps.iscurrentVerse,
     ];
 
     if (this.props.match) {
@@ -79,7 +158,7 @@ class Verse extends Component {
     return (
       <div>
         {verse.mediaContents.map((content, index) => (
-          <div className={`${styles.translation} translation`} key={index}>
+          <StyledTranslation className="translation" key={index}>
             <h2 className="text-translation times-new">
               <small>
                 <a
@@ -99,7 +178,7 @@ class Verse extends Component {
                 </a>
               </small>
             </h2>
-          </div>
+          </StyledTranslation>
         ))}
       </div>
     );
@@ -112,13 +191,13 @@ class Verse extends Component {
       currentVerse,
       isPlaying,
       audioActions,
-      isSearched
+      isSearched,
     } = this.props; // eslint-disable-line max-len
     // NOTE: Some 'word's are glyphs (jeem). Not words and should not be clicked for audio
     let wordAudioPosition = -1;
     const renderText = false; // userAgent.isBot;
 
-    const text = verse.words.map((word) => ( // eslint-disable-line
+    const text = verse.words.map(word => (
       <Word
         word={word}
         key={`${word.position}-${word.code}-${word.lineNum}`}
@@ -135,11 +214,14 @@ class Verse extends Component {
     ));
 
     return (
-      <h1 className={`${styles.font} text-right text-arabic`}>
-        <p>
-          {text}
-        </p>
-      </h1>
+      <FontText className="row text-right text-arabic">
+        <ShowAyahAndJuzMark // Migrate text rendering to ShowAyahAndJuzMark Component
+          chapterId={verse.chapterId}
+          verseNumber={verse.verseNumber}
+          text={text}
+          juzNumber={verse.juzNumber}
+        />
+      </FontText>
     );
   }
 
@@ -157,9 +239,10 @@ class Verse extends Component {
           className="text-muted"
         >
           <i
-            className={`ss-icon ${playing ? 'ss-pause' : 'ss-play'} vertical-align-middle`}
-          />
-          {' '}
+            className={`ss-icon ${
+              playing ? 'ss-pause' : 'ss-play'
+            } vertical-align-middle`}
+          />{' '}
           <LocaleFormattedMessage
             id={playing ? 'actions.pause' : 'actions.play'}
             defaultMessage={playing ? 'Pause' : 'Play'}
@@ -178,10 +261,17 @@ class Verse extends Component {
       <a
         tabIndex="-1"
         className="text-muted"
-        onClick={() => this.props.loadTafsirs(verse)}
+        onClick={() =>
+          this.props.loadTafsirs(
+            verse,
+            <LocaleFormattedMessage
+              id="tafsir.select"
+              defaultMessage={'Select a tafsir'}
+            />
+          )
+        }
       >
-        <i className="ss-book vertical-align-middle" />
-        {' '}
+        <i className="ss-book vertical-align-middle" />{' '}
         <LocaleFormattedMessage
           id={'actions.tafsir'}
           defaultMessage={'Tafsir'}
@@ -202,47 +292,6 @@ class Verse extends Component {
     return false;
   }
 
-  renderBookmark() {
-    const {
-      verse,
-      bookmarked,
-      isAuthenticated,
-      bookmarkActions,
-      isSearched
-    } = this.props;
-
-    if (isSearched || !isAuthenticated) return false;
-
-    if (bookmarked) {
-      return (
-        <a
-          tabIndex="-1"
-          onClick={() => bookmarkActions.removeBookmark(verse.verseKey)}
-          className="text-muted"
-        >
-          <strong>
-            <i className="ss-icon ss-bookmark vertical-align-middle" />{' '}
-            <LocaleFormattedMessage
-              id="verse.bookmarked"
-              defaultMessage="Bookmarked"
-            />
-          </strong>
-        </a>
-      );
-    }
-
-    return (
-      <a
-        tabIndex="-1"
-        onClick={() => bookmarkActions.addBookmark(verse.verseKey)}
-        className="text-muted"
-      >
-        <i className="ss-icon ss-bookmark vertical-align-middle" />{' '}
-        <LocaleFormattedMessage id="verse.bookmark" defaultMessage="Bookmark" />
-      </a>
-    );
-  }
-
   renderBadge() {
     const { isSearched, verse } = this.props;
     const translations = (verse.translations || [])
@@ -252,9 +301,7 @@ class Verse extends Component {
 
     const content = (
       <h4>
-        <span className={`label label-default ${styles.label}`}>
-          {verse.verseKey}
-        </span>
+        <Label className="label label-default">{verse.verseKey}</Label>
       </h4>
     );
 
@@ -266,7 +313,9 @@ class Verse extends Component {
 
     return (
       <Link
-        to={`/${verse.chapterId}/${verse.verseNumber}?translations=${translations}`}
+        to={`/${verse.chapterId}/${
+          verse.verseNumber
+        }?translations=${translations}`}
         data-metrics-event-name={metric}
       >
         {content}
@@ -286,14 +335,13 @@ class Verse extends Component {
     const { isPdf } = this.props;
 
     return (
-      <div className={`col-md-1 col-sm-1 ${styles.controls}`}>
+      <Controls className="col-md-1 col-sm-1">
         {this.renderBadge()}
         {this.renderPlayLink()}
         {this.renderCopyLink()}
         {this.renderTafsirLink()}
-        {this.renderBookmark()}
         {!isPdf && this.renderShare()}
-      </div>
+      </Controls>
     );
   }
 
@@ -302,9 +350,10 @@ class Verse extends Component {
     debug('component:Verse', `Render ${verse.verseKey}`);
 
     return (
-      <Element
+      <Container
         name={`verse:${verse.verseKey}`}
-        className={`row ${iscurrentVerse && 'highlight'} ${styles.container}`}
+        className="row"
+        highlight={iscurrentVerse}
       >
         {this.renderControls()}
         <div className="col-md-11 col-sm-11">
@@ -312,7 +361,7 @@ class Verse extends Component {
           {this.renderTranslations()}
           {this.renderMedia()}
         </div>
-      </Element>
+      </Container>
     );
   }
 }
@@ -320,27 +369,24 @@ class Verse extends Component {
 Verse.propTypes = {
   isSearched: PropTypes.bool,
   verse: customPropTypes.verseType.isRequired,
-  chapter: customPropTypes.surahType.isRequired,
-  bookmarked: PropTypes.bool, // TODO: Add this for search
-  bookmarkActions: customPropTypes.bookmarkActions,
+  chapter: customPropTypes.chapterType.isRequired,
   mediaActions: customPropTypes.mediaActions,
   audioActions: customPropTypes.audioActions,
   match: customPropTypes.match,
   isPlaying: PropTypes.bool,
-  isAuthenticated: PropTypes.bool,
   tooltip: PropTypes.string,
   currentWord: PropTypes.number, // gets passed in an integer, null by default
   iscurrentVerse: PropTypes.bool,
   currentVerse: PropTypes.string,
   userAgent: PropTypes.object, // eslint-disable-line
   loadTafsirs: PropTypes.func.isRequired,
-  isPdf: PropTypes.bool
+  isPdf: PropTypes.bool,
 };
 
 Verse.defaultProps = {
   currentWord: null,
   isSearched: false,
-  isPdf: false
+  isPdf: false,
 };
 
-export default connect(() => ({}), { loadTafsirs })(Verse);
+export default connect(null, { loadTafsirs })(Verse);

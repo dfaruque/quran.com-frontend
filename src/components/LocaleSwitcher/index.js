@@ -1,5 +1,6 @@
 /* global window */
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import cookie from 'react-cookie';
 import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 import Menu, { MenuItem } from 'quran-components/lib/Menu';
@@ -8,10 +9,20 @@ import Icon from 'quran-components/lib/Icon';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
 
 import config from '../../config';
+import { NAVBAR_EVENTS } from '../../events';
 
 const { locales, defaultLocale } = config;
 
 class LocaleSwitcher extends Component {
+  static propTypes = {
+    className: PropTypes.string,
+    renderAs: PropTypes.string
+  };
+
+  static defaultProps = {
+    renderAs: 'dropdown'
+  };
+
   state = {
     currentLocale: defaultLocale
   };
@@ -63,8 +74,9 @@ class LocaleSwitcher extends Component {
       <NavDropdown
         active={false}
         id="site-language-dropdown"
-        className={className}
+        className={className || 'locale-switcher'}
         title={locales[this.state.currentLocale]}
+        {...NAVBAR_EVENTS.CLICK.LOCALE_SWITCHER_TOGGLE.PROPS}
       >
         {this.renderList()}
       </NavDropdown>
@@ -75,11 +87,7 @@ class LocaleSwitcher extends Component {
     return (
       <MenuItem
         icon={<Icon type="globe" />}
-        menu={
-          <Menu>
-            {this.renderList()}
-          </Menu>
-        }
+        menu={<Menu>{this.renderList()}</Menu>}
       >
         <LocaleFormattedMessage
           id="local.siteLocale"
@@ -99,14 +107,5 @@ class LocaleSwitcher extends Component {
     return this.renderAsMenu();
   }
 }
-
-LocaleSwitcher.propTypes = {
-  className: PropTypes.string,
-  renderAs: PropTypes.string
-};
-
-LocaleSwitcher.defaultProps = {
-  renderAs: 'dropdown'
-};
 
 export default LocaleSwitcher;

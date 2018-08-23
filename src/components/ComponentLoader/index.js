@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const ComponentLoader = ({ isLoading, error, pastDelay }) => {
   if (isLoading) {
@@ -13,7 +14,13 @@ const ComponentLoader = ({ isLoading, error, pastDelay }) => {
 ComponentLoader.propTypes = {
   isLoading: PropTypes.bool,
   error: PropTypes.any, // eslint-disable-line
-  pastDelay: PropTypes.bool
+  pastDelay: PropTypes.bool,
+};
+
+ComponentLoader.defaultProps = {
+  error: null,
+  isLoading: false,
+  pastDelay: false,
 };
 
 export default ComponentLoader;

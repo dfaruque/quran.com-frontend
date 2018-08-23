@@ -1,21 +1,26 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import copyToClipboard from 'copy-to-clipboard';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
 
-class Copy extends Component {
+import { COPY_EVENTS } from '../../events';
 
+class Copy extends Component {
   state = {
     isCopied: false
   };
 
   handleCopy = () => {
-    copyToClipboard(`${this.props.text} - ${this.props.verseKey}`);
+    const { text, verseKey } = this.props;
+
+    copyToClipboard(`${text} - ${verseKey}`);
     this.setState({ isCopied: true });
 
     setTimeout(() => this.setState({ isCopied: false }), 1000);
   };
 
   render() {
+    const { verseKey } = this.props;
     const { isCopied } = this.state;
 
     return (
@@ -23,7 +28,10 @@ class Copy extends Component {
         tabIndex="-1"
         onClick={this.handleCopy}
         className={!isCopied && 'text-muted'}
-        data-metrics-event-name="Ayah:Copy"
+        {...COPY_EVENTS.CLICK.VERSE.PROPS}
+        data-metrics-verse-key={verseKey}
+        data-metrics-chapter-id={verseKey.split(':')[0]}
+        data-metrics-verse-id={verseKey.split(':')[1]}
       >
         <i className="ss-icon ss-attach vertical-align-middle" />{' '}
         <LocaleFormattedMessage
@@ -37,7 +45,7 @@ class Copy extends Component {
 
 Copy.propTypes = {
   text: PropTypes.string.isRequired,
-  verseKey: PropTypes.string.isRequired,
+  verseKey: PropTypes.string.isRequired
 };
 
 export default Copy;

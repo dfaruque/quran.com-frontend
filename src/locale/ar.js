@@ -4,7 +4,7 @@ export default {
     local: 'arabic',
     'local.siteLocale': 'اختر لغة الموقع',
     'local.changeLocal': 'اختر اللغة التي تود عرض الموقع بها',
-    'local.navtiveName': 'العربية',
+    'local.nativeName': 'العربية',
     'local.selectLabel': 'اللغة',
     'setting.title': 'خيارات',
     'setting.chapters': 'السورة',
@@ -28,9 +28,11 @@ export default {
     'ayah.media.lectureFrom': 'مشاهدة محاضرة {from}',
     'ayah.bookmarked': 'إشارة مرجعية',
     'ayah.bookmark': 'المرجعية',
+    'ayah.notFound': 'لم يتم العثور على الآية',
 
     'search.placeholder': 'بحث',
-    'search.resultHeading': '{from}-{to} OF <span> {total} </span> SEARCH RESULTS FOR: <span>{query}</span>', // eslint-disable-line max-len
+    'search.resultHeading':
+      '{from}-{to} OF <span> {total} </span> SEARCH RESULTS FOR: <span>{query}</span>', // eslint-disable-line max-len
     'search.error': 'آسف، كان هناك خطأ مع بحثك.',
     'search.nothing': 'لا استعلام البحث',
     'search.noResult': 'لا توجد نتائج.ا',
@@ -54,7 +56,8 @@ export default {
     'player.repeat.rangeEnd': 'إلى',
     'player.repeat.times': 'مرات',
     'player.repeat.loop': 'أنشوطة',
-    'player.scrollButtonTip': 'مخطوطات تلقائيا إلى يلعب حاليا الآية على التحولات ...',
+    'player.scrollButtonTip':
+      'مخطوطات تلقائيا إلى يلعب حاليا الآية على التحولات ...',
 
     'app.loading': 'جار التحميل ...',
     'actions.copy': 'نسخ',
@@ -71,16 +74,21 @@ export default {
     'nav.otherLinks': 'روابط اخرى',
     'nav.contactUs': 'اتصل بنا',
     'nav.help': 'مساعدة وتعليقات',
-    'nav.aboutQuranProject': 'Quran.com المعروف أيضا باسم القرآن الكريم، قناة القرآن الكريم، القرآن الكريم، القرآن الكريم) هو مشروع خيري)', // eslint-disable-line max-len
+    'nav.aboutQuranProject':
+      'Quran.com المعروف أيضا باسم القرآن الكريم، قناة القرآن الكريم، القرآن الكريم، القرآن الكريم) هو مشروع خيري)', // eslint-disable-line max-len
     'nav.rightsReserved': 'كل الحقوق محفوظة',
     'nav.mobile': 'التليفون المحمول',
     'nav.navigate': 'انتقل',
     'nav.legacySite': 'الموقع القديم',
+    'nav.blog': 'مدونة',
 
-    'login.message': 'تسجيل الدخول إلى Quran.com لتخزين كل ما تبذلونه من العناوين والملاحظات والأنشطة.',
+    'juz.index.heading': 'الجوز',
 
-    'ayah.notFound': 'لم يتم العثور على الآية',
-    'error.invalid-surah': "السورة خارج النطاق. الرجاء الانتقال إلى <a href='/'> الصفحة الرئيسية </a> وتحديد سورة",
-    'error.invalid-ayah': "آية خارج النطاق. الرجاء الانتقال إلى <a href='/'> الصفحة الرئيسية </a> وتحديد سورة / آية"
+    'login.message':
+      'تسجيل الدخول إلى Quran.com لتخزين كل ما تبذلونه من العناوين والملاحظات والأنشطة.',
+    'error.invalid-surah':
+      "السورة خارج النطاق. الرجاء الانتقال إلى <a href='/'> الصفحة الرئيسية </a> وتحديد سورة",
+    'error.invalid-ayah':
+      "آية خارج النطاق. الرجاء الانتقال إلى <a href='/'> الصفحة الرئيسية </a> وتحديد سورة / آية"
   }
 };

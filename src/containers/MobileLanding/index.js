@@ -1,45 +1,71 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import Button from 'react-bootstrap/lib/Button';
+import styled from 'styled-components';
 
 import makeHeadTags from 'helpers/makeHeadTags';
 
-const styles = require('./style.scss');
 const apple = require('../../../static/images/apple-white.svg');
 const play = require('../../../static/images/play-store.svg');
 const phones = require('../../../static/images/mockup-desktop@2x.png');
 
+const title = 'Quran Android and iOS apps by Quran.com';
+const description =
+  'From the makers of Quran.com comes Quran ' +
+  'for iOS and Android, a beautiful, and ad-free mushaf app';
+
+const Container = styled.div`
+  min-height: 500px;
+  min-height: 100vh;
+  padding-top: 15%;
+
+  & + footer {
+    margin-top: 0;
+  }
+`;
+
+const StyledButton = styled(Button)`
+  border-radius: 50px;
+
+  @media (max-width: ${props => props.theme.screen.sm}) {
+    &:last-child {
+      margin-top: 15px;
+    }
+  }
+`;
+
+const Title = styled.h1`
+  color: #000000;
+`;
+
 export default () => (
-  <div className={`${styles.container} montserrat container`}>
+  <Container className="montserrat container">
     <Helmet
-      {
-        ...makeHeadTags({
-          title: 'Quran Android and iOS apps by Quran.com',
-          description: 'From the makers of Quran.com comes Quran for iOS and Android, a beautiful, and ad-free mushaf apps' // eslint-disable-line max-len
-        })
-      }
+      {...makeHeadTags({
+        title,
+        description
+      })}
     />
     <div className="row">
       <div className="col-md-5">
-        <h1 className={styles.title}>
-          <strong>Quran</strong><br />
+        <Title>
+          <strong>Quran</strong>
+          <br />
           by quran.com القرآن
-        </h1>
+        </Title>
         <h3>
           <small>
-            From the makers of Quran.com comes Quran for iOS, a beautiful,{' '}
-            and ad-free mushaf app.
-            It’s now easier to read the Quran on the go, memorize it and listen to your{' '}
-            favorite reciters.
+            From the makers of Quran.com comes Quran for iOS, a beautiful, and
+            ad-free mushaf app. It’s now easier to read the Quran on the go,
+            memorize it and listen to your favorite reciters.
           </small>
         </h3>
         <div className="row" style={{ paddingTop: 15 }}>
           <div className="col-md-6">
-            <Button
+            <StyledButton
               bsStyle="primary"
               bsSize="lg"
               href="https://itunes.apple.com/us/app/quran-by-quran.com-qran/id1118663303?mt=8"
-              className={styles.button}
               block
             >
               <img
@@ -49,18 +75,22 @@ export default () => (
                 style={{ paddingRight: 10, marginTop: -6 }}
               />
               Download
-            </Button>
+            </StyledButton>
           </div>
           <div className="col-md-6">
-            <Button
+            <StyledButton
               bsSize="lg"
-              className={styles.button}
               href="https://play.google.com/store/apps/details?id=com.quran.labs.androidquran&hl=en"
               block
             >
-              <img src={play} alt="Play Store" height="24px" style={{ paddingRight: 10 }} />
+              <img
+                src={play}
+                alt="Play Store"
+                height="24px"
+                style={{ paddingRight: 10 }}
+              />
               Download
-            </Button>
+            </StyledButton>
           </div>
         </div>
       </div>
@@ -68,5 +98,5 @@ export default () => (
         <img src={phones} width="100%" alt="Apps" />
       </div>
     </div>
-  </div>
+  </Container>
 );

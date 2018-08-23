@@ -1,4 +1,12 @@
 /* global Audio */
+import config from '../../config';
+
+export function buildAudioURL(audio) {
+  if (audio.url.startsWith('//')) return audio.url;
+
+  return `${config('audioCDN')}/${audio.url}`;
+}
+
 export function buildAudioForAyah(audio) {
   const scopedAudio = new Audio();
   let segments = null;
@@ -6,7 +14,7 @@ export function buildAudioForAyah(audio) {
   scopedAudio.preload = 'none';
 
   if (audio.url) {
-    scopedAudio.src = audio.url;
+    scopedAudio.src = buildAudioURL(audio);
     segments = audio.segments;
     return { audio: scopedAudio, segments };
   }
@@ -27,7 +35,6 @@ export function buildAudioFromHash(ayahsObject = {}) {
 
   return audioFromHash;
 }
-
 
 export default function buildAudio(ayahs) {
   if (!ayahs.length) {

@@ -1,8 +1,17 @@
 /* global window */
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as customPropTypes from 'customPropTypes';
 import useragent from 'express-useragent';
 import cookie from 'react-cookie';
+
+const appleIcon = require('../../../static/images/app-banner-ios.jpg');
+const androidIcon = require('../../../static/images/app-banner-android.png');
+
+const ICONS = {
+  apple: appleIcon,
+  android: androidIcon
+};
 
 class SmartBanner extends Component {
   state = {
@@ -108,8 +117,10 @@ class SmartBanner extends Component {
   retrieveInfo() {
     const link = this.state.settings.getStoreLink() + this.state.appId;
     const inStore = `
-      ${this.props.price[this.state.deviceType]} - ${this.props.storeText[this.state.deviceType]}`;
-    const icon = require(`../../../static/images/${this.state.settings.icon}`); // eslint-disable-line
+      ${this.props.price[this.state.deviceType]} - ${
+      this.props.storeText[this.state.deviceType]
+    }`;
+    const icon = ICONS[this.state.deviceType];
 
     return {
       icon,

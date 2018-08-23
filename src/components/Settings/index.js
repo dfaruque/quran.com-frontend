@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as OptionsActions from 'redux/actions/options.js';
 import { connect } from 'react-redux';
 import Menu from 'quran-components/lib/Menu';
@@ -40,7 +41,7 @@ class Settings extends Component {
       <Menu>
         <ChapterInfoToggle
           onToggle={setOption}
-          isToggled={options.isShowingSurahInfo}
+          isToggled={options.isShowingChapterInfo}
         />
         <ReadingModeToggle
           isToggled={options.isReadingMode}
@@ -69,7 +70,7 @@ class Settings extends Component {
 Settings.propTypes = {
   setOption: PropTypes.func.isRequired,
   load: PropTypes.func.isRequired,
-  chapter: customPropTypes.surahType.isRequired,
+  chapter: customPropTypes.chapterType.isRequired,
   options: customPropTypes.optionsType.isRequired,
   versesIds: PropTypes.instanceOf(Set)
 };

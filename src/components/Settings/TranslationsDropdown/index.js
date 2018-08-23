@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as customPropTypes from 'customPropTypes';
 import { connect } from 'react-redux';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
@@ -8,7 +9,7 @@ import Checkbox from 'quran-components/lib/Checkbox';
 import Loader from 'quran-components/lib/Loader';
 import Icon from 'quran-components/lib/Icon';
 
-const style = require('./style.scss');
+const LoaderStyle = { position: 'relative', overflow: 'hidden' };
 
 const compareAlphabetically = property => (previous, next) => {
   const previousText = previous[property].toUpperCase();
@@ -59,7 +60,7 @@ class TranslationsDropdown extends Component {
       const checked = translations.find(option => option === translation.id);
 
       return (
-        <MenuItem key={translation.id} className={style.item}>
+        <MenuItem key={translation.id}>
           <Checkbox
             id={translation.id + translation.languageName}
             name="translation"
@@ -95,39 +96,46 @@ class TranslationsDropdown extends Component {
     );
   }
 
+  renderMenu() {
+    const { loadingTranslations } = this.props;
+
+    if (loadingTranslations) {
+      return <Loader isActive relative style={LoaderStyle} />;
+    }
+
+    return (
+      <div>
+        <MenuItem onClick={this.handleRemoveContent}>
+          <LocaleFormattedMessage
+            id="setting.translations.removeAll"
+            defaultMessage="Remove all"
+          />
+        </MenuItem>
+
+        <MenuItem divider>
+          <LocaleFormattedMessage
+            id="setting.translations.english"
+            defaultMessage="English"
+          />
+        </MenuItem>
+
+        {this.renderEnglishList()}
+        <MenuItem divider>
+          <LocaleFormattedMessage
+            id="setting.translations.other"
+            defaultMessage="Other Languages"
+          />
+        </MenuItem>
+        {this.renderLanguagesList()}
+      </div>
+    );
+  }
+
   render() {
-    const { translations, translationOptions } = this.props;
     return (
       <MenuItem
         icon={<Icon type="list" />}
-        menu={
-          translationOptions.length
-            ? <Menu>
-              {translations &&
-                  translations.length &&
-                  <MenuItem onClick={this.handleRemoveContent}>
-                    <LocaleFormattedMessage
-                      id="setting.translations.removeAll"
-                      defaultMessage="Remove all"
-                    />
-                  </MenuItem>}
-              <MenuItem divider>
-                <LocaleFormattedMessage
-                  id="setting.translations.english"
-                  defaultMessage="English"
-                />
-              </MenuItem>
-              {this.renderEnglishList()}
-              <MenuItem divider>
-                <LocaleFormattedMessage
-                  id="setting.translations.other"
-                  defaultMessage="Other Languages"
-                />
-              </MenuItem>
-              {this.renderLanguagesList()}
-            </Menu>
-            : <Loader isActive />
-        }
+        menu={<Menu>{this.renderMenu()}</Menu>}
       >
         <LocaleFormattedMessage
           id="setting.translations.title"
@@ -142,7 +150,8 @@ TranslationsDropdown.propTypes = {
   onOptionChange: PropTypes.func.isRequired,
   translations: PropTypes.arrayOf(PropTypes.number).isRequired,
   translationOptions: customPropTypes.translationOptions,
-  loadTranslations: PropTypes.func.isRequired
+  loadTranslations: PropTypes.func.isRequired,
+  loadingTranslations: PropTypes.bool.isRequired
 };
 
 export default connect(

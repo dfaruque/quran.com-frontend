@@ -8,9 +8,7 @@ import useragent from 'express-useragent';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import httpProxy from 'http-proxy';
-
-import sitemap from './sitemap';
-import support from './support';
+import fs from 'fs';
 
 const proxyApi = httpProxy.createProxyServer({
   target: process.env.API_URL,
@@ -56,6 +54,14 @@ export default (server) => {
     proxyOneQuran.web(req, res);
   });
 
+  server.use('/apple-app-site-association', (req, res) => {
+    const siteAssociation = fs.readFileSync(
+      `${__dirname}/apple-app-site-association.json`
+    );
+    res.set('Content-Type', 'application/json');
+    res.status(200).send(siteAssociation);
+  });
+
   server.use('/api', (req, res) => {
     proxyApi.web(req, res);
   });
@@ -67,12 +73,20 @@ export default (server) => {
   server.use(cors());
 
   // Static content
-  server.use(favicon(path.join((process.env.PWD || process.env.pm_cwd), '/static/favicon.ico')));
-  server.use(express.static(path.join(process.env.PWD || process.env.pm_cwd, '/static')));
-  server.use('/public', express.static(path.join((process.env.PWD || process.env.pm_cwd), '/static/dist')));
-
-  sitemap(server);
-  support(server);
+  server.use(
+    favicon(
+      path.join(process.env.PWD || process.env.pm_cwd, '/static/favicon.ico')
+    )
+  );
+  server.use(
+    express.static(path.join(process.env.PWD || process.env.pm_cwd, '/static'))
+  );
+  server.use(
+    '/public',
+    express.static(
+      path.join(process.env.PWD || process.env.pm_cwd, '/static/dist')
+    )
+  );
 
   server.get(/^\/(images|fonts)\/.*/, (req, res) => {
     res.redirect(301, `//quran-1f14.kxcdn.com${req.path}`);

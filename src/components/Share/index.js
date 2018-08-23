@@ -1,14 +1,43 @@
 import React from 'react';
-import { ShareButtons, generateShareIcon } from 'react-share';
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  TwitterShareButton,
+  TwitterIcon
+} from 'react-share';
+import styled, { css } from 'styled-components';
 import * as customPropTypes from 'customPropTypes';
+import PropTypes from 'prop-types';
 
-const styles = require('./style.scss');
+const inlineStyle = css`
+  display: inline-flex;
+`;
 
-const { FacebookShareButton, TwitterShareButton } = ShareButtons;
-const FacebookIcon = generateShareIcon('facebook');
-const TwitterIcon = generateShareIcon('twitter');
+const Container = styled.div`
+  position: relative;
+  top: 7px;
+  display: inline-block;
 
-const Share = ({ chapter, verse }) => {
+  ${prop => prop.inline && inlineStyle} .social-icon {
+    &:hover {
+      cursor: pointer;
+      opacity: 0.8;
+    }
+  }
+`;
+
+const FacebookButton = styled(FacebookShareButton)`
+  background-repeat: no-repeat;
+  background-size: 12px;
+  padding-top: 1px;
+`;
+
+const TwitterButton = styled(TwitterShareButton)`
+  background-repeat: no-repeat;
+  background-size: 21px;
+`;
+
+const Share = ({ chapter, verse, inline }) => {
   // Fallback to Surah Id
   let path;
 
@@ -16,7 +45,9 @@ const Share = ({ chapter, verse }) => {
     const translations = (verse.translations || [])
       .map(translation => translation.resourceId)
       .join(',');
-    path = `${verse.chapterId}/${verse.verseNumber}?translations=${translations}`;
+    path = `${verse.chapterId}/${
+      verse.verseNumber
+    }?translations=${translations}`;
   } else {
     path = chapter.chapterNumber;
   }
@@ -28,30 +59,26 @@ const Share = ({ chapter, verse }) => {
   const iconProps = verse ? { iconBgStyle: { fill: '#d1d0d0' } } : {};
 
   return (
-    <div className={`${styles.shareContainer}`}>
-      <FacebookShareButton
+    <Container inline={inline}>
+      <FacebookButton
         url={shareUrl}
-        title={title}
+        quote={title}
         windowWidth={670}
         windowHeight={540}
-        className={`${styles.iconContainer}`}
       >
         <FacebookIcon size={24} round {...iconProps} />
-      </FacebookShareButton>
-      <TwitterShareButton
-        url={shareUrl}
-        title={title}
-        className={`${styles.iconContainer}`}
-      >
+      </FacebookButton>
+      <TwitterButton url={shareUrl} title={title}>
         <TwitterIcon size={24} round {...iconProps} />
-      </TwitterShareButton>
-    </div>
+      </TwitterButton>
+    </Container>
   );
 };
 
 Share.propTypes = {
-  chapter: customPropTypes.surahType.isRequired,
-  verse: customPropTypes.verseType
+  chapter: customPropTypes.chapterType.isRequired,
+  verse: customPropTypes.verseType,
+  inline: PropTypes.bool
 };
 
 export default Share;

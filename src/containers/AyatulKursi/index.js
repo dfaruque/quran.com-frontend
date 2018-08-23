@@ -1,18 +1,19 @@
 /* global window, document */
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as customPropTypes from 'customPropTypes';
-import Link from 'react-router/lib/Link';
+import { Link } from 'react-router-dom';
 // redux
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
 import { push } from 'react-router-redux';
 
 import Helmet from 'react-helmet';
-import Loadable from 'react-loadable';
+import { asyncComponent } from 'react-async-component';
 
 // components
 import Verse from 'components/Verse';
+import Container from 'components/Container';
 import ComponentLoader from 'components/ComponentLoader';
 import Bismillah from 'components/Bismillah';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
@@ -21,54 +22,49 @@ import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
 import makeHeadTags from 'helpers/makeHeadTags';
 import debug from 'helpers/debug';
 
-import * as AudioActions from 'redux/actions/audioplayer.js';
-import * as AyahActions from 'redux/actions/verses.js';
-import * as BookmarkActions from 'redux/actions/bookmarks.js';
-import * as OptionsActions from 'redux/actions/options.js';
-import * as MediaActions from 'redux/actions/media.js';
+import * as AudioActions from '../../redux/actions/audioplayer.js';
+import * as AyahActions from '../../redux/actions/verses.js';
+import * as OptionsActions from '../../redux/actions/options.js';
+import * as MediaActions from '../../redux/actions/media.js';
 
-import { chaptersConnect, versesConnect } from 'containers/Surah/connect';
-
-const style = require('../Surah/style.scss');
-
-const PageView = Loadable({
-  loader: () =>
-    import(/* webpackChunkName: "pageview" */ 'components/PageView'),
-  LoadingComponent: ComponentLoader
+const PageView = asyncComponent({
+  resolve: () =>
+    import(/* webpackChunkName: "PageView" */ 'components/PageView'),
+  LoadingComponent: ComponentLoader,
 });
 
-const Audioplayer = Loadable({
-  loader: () =>
-    import(/* webpackChunkName: "audioplayer" */ 'components/Audioplayer'),
-  LoadingComponent: ComponentLoader
+const Audioplayer = asyncComponent({
+  resolve: () =>
+    import(/* webpackChunkName: "Audioplayer" */ 'components/Audioplayer'),
+  LoadingComponent: ComponentLoader,
 });
 
-const TopOptions = Loadable({
-  loader: () =>
-    import(/* webpackChunkName: "topoptions" */ 'components/TopOptions'),
-  LoadingComponent: ComponentLoader
+const TopOptions = asyncComponent({
+  resolve: () =>
+    import(/* webpackChunkName: "TopOptions" */ 'components/TopOptions'),
+  LoadingComponent: ComponentLoader,
 });
 
 const title = 'Ayatul Kursi';
-
 const description =
-  'Ayatul Kursi is verse 255 of the second chapter, surah Baqarah of the Holy Quran, Surah al-Baqarah (The Chapter of the Cow).  It is also known as the Throne Verse.';
+  'Ayatul Kursi is verse 255 of the second chapter, ' +
+  'Surah al-Baqarah (The Chapter of the Cow), in the ' +
+  'Holy Quran. It is also known as the Throne Verse.';
 
 class AyatulKursi extends Component {
   state = {
-    sidebarOpen: false
+    sidebarOpen: false,
   };
 
   shouldComponentUpdate(nextProps, nextState) {
     const conditions = [
       this.state.sidebarOpen !== nextState.sidebarOpen,
       this.props.chapter !== nextProps.chapter,
-      this.props.bookmarks !== nextProps.bookmarks,
       this.props.isLoading !== nextProps.isLoading,
       this.props.isLoaded !== nextProps.isLoaded,
       this.props.options !== nextProps.options,
       this.props.currentVerse !== nextProps.currentVerse,
-      this.props.isPlaying !== nextProps.isPlaying
+      this.props.isPlaying !== nextProps.isPlaying,
     ];
 
     return conditions.some(condition => condition);
@@ -82,10 +78,9 @@ class AyatulKursi extends Component {
       verses,
       actions,
       options,
-      bookmarks,
       isPlaying,
       isAuthenticated,
-      currentVerse
+      currentVerse,
     } = this.props; // eslint-disable-line no-shadow
 
     return Object.values(verses).map(verse => (
@@ -94,9 +89,7 @@ class AyatulKursi extends Component {
         chapter={chapter}
         currentVerse={currentVerse}
         iscurrentVerse={isPlaying && verse.verseKey === currentVerse}
-        bookmarked={!!bookmarks[verse.verseKey]}
         tooltip={options.tooltip}
-        bookmarkActions={actions.bookmark}
         audioActions={actions.audio}
         mediaActions={actions.media}
         isPlaying={isPlaying}
@@ -133,7 +126,7 @@ class AyatulKursi extends Component {
         <Helmet
           {...makeHeadTags({
             title,
-            description
+            description,
           })}
           script={[
             {
@@ -156,20 +149,25 @@ class AyatulKursi extends Component {
                   "name": "Ayatul Kursi"
                 }
               }]
-            }`
-            }
+            }`,
+            },
           ]}
           style={[
             {
-              cssText: `.text-arabic{font-size: ${options.fontSize.arabic}rem;} .text-translation{font-size: ${options.fontSize.translation}rem;}` // eslint-disable-line max-len
-            }
+              cssText: `.text-arabic{font-size: ${
+                options.fontSize.arabic
+              }rem;} .text-translation{font-size: ${
+                options.fontSize.translation
+              }rem;}`, // eslint-disable-line max-len
+            },
           ]}
         />
-        <div className={`container-fluid ${style.container}`}>
+        <Container className="container-fluid">
           <div className="row">
             <div className="col-md-10 col-md-offset-1">
-              {__CLIENT__ &&
-                <TopOptions title="Ayatul Kursi" chapter={chapter} />}
+              {__CLIENT__ && (
+                <TopOptions title="Ayatul Kursi" chapter={chapter} />
+              )}
               <Bismillah chapter={chapter} />
               {options.isReadingMode ? this.renderLines() : this.renderVerses()}
             </div>
@@ -186,44 +184,38 @@ class AyatulKursi extends Component {
               </ul>
             </div>
           </div>
-        </div>
-        {__CLIENT__ &&
+        </Container>
+
+        {__CLIENT__ && (
           <Audioplayer
+            verses
             chapter={chapter}
-            startVerse={Object.values(verses)[0]}
+            currentVerse={Object.values(verses)[0]}
             onLoadAyahs={this.handleLazyLoadAyahs}
-          />}
+          />
+        )}
       </div>
     );
   }
 }
 
 AyatulKursi.propTypes = {
-  chapter: customPropTypes.surahType.isRequired,
+  chapter: customPropTypes.chapterType.isRequired,
   actions: PropTypes.object.isRequired, // eslint-disable-line
   lines: PropTypes.object.isRequired, // eslint-disable-line
   currentVerse: PropTypes.string,
-  bookmarks: PropTypes.object.isRequired, // eslint-disable-line
   isLoading: PropTypes.bool.isRequired,
   isLoaded: PropTypes.bool.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
+  isAuthenticated: PropTypes.bool,
   options: PropTypes.object.isRequired, // eslint-disable-line
   verses: customPropTypes.verses,
-  isPlaying: PropTypes.bool
+  isPlaying: PropTypes.bool,
 };
-
-const AsyncAyatulKursi = asyncConnect([
-  { promise: chaptersConnect },
-  {
-    promise: ({ store }) =>
-      versesConnect({ store, params: { chapterId: '2', range: '255' } })
-  }
-])(AyatulKursi);
 
 function mapStateToProps(state) {
   const chapterId = 2;
-  const chapter: Object = state.chapters.entities[chapterId];
-  const verses: Object = state.verses.entities[chapterId];
+  const chapter = state.chapters.entities[chapterId];
+  const verses = state.verses.entities[chapterId];
   const currentVerse = state.audioplayer.currentVerse || Object.keys(verses)[0];
 
   return {
@@ -232,13 +224,11 @@ function mapStateToProps(state) {
     currentVerse,
     isStarted: state.audioplayer.isStarted,
     isPlaying: state.audioplayer.isPlaying,
-    isAuthenticated: state.auth.loaded,
     currentWord: state.verses.currentWord,
-    bookmarks: state.bookmarks.entities,
     isLoading: state.verses.loading,
     isLoaded: state.verses.loaded,
     lines: state.lines.lines,
-    options: state.options
+    options: state.options,
   };
 }
 
@@ -248,11 +238,10 @@ function mapDispatchToProps(dispatch) {
       options: bindActionCreators(OptionsActions, dispatch),
       verse: bindActionCreators(AyahActions, dispatch),
       audio: bindActionCreators(AudioActions, dispatch),
-      bookmark: bindActionCreators(BookmarkActions, dispatch),
       media: bindActionCreators(MediaActions, dispatch),
-      push: bindActionCreators(push, dispatch)
-    }
+      push: bindActionCreators(push, dispatch),
+    },
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AsyncAyatulKursi);
+export default connect(mapStateToProps, mapDispatchToProps)(AyatulKursi);

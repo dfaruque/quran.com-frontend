@@ -1,29 +1,32 @@
 import * as customPropTypes from 'customPropTypes';
 import React from 'react';
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
 
 import Helmet from 'react-helmet';
-import Loadable from 'react-loadable';
+import { asyncComponent } from 'react-async-component';
 import Button from 'quran-components/lib/Button';
 import ComponentLoader from 'components/ComponentLoader';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
 import makeHeadTags from 'helpers/makeHeadTags';
 
-import { chaptersConnect, chapterInfoConnect } from '../Surah/connect';
-
-const SurahInfo = Loadable({
-  loader: () =>
-    import(/* webpackChunkName: "surahinfo" */ 'components/SurahInfo'),
-  LoadingComponent: ComponentLoader
+const ChapterInfoPanel = asyncComponent({
+  resolve: () =>
+    import(/* webpackChunkName: "ChapterInfoPanel" */ 'components/ChapterInfoPanel'),
+  LoadingComponent: ComponentLoader,
 });
 
-const ChapterInfo = ({ chapter, info }) => (
+const ChapterInfo = ({ chapter, chapterInfo }) => (
   <div className="row" style={{ marginTop: 20 }}>
     <Helmet
       {...makeHeadTags({
         title: `Surah ${chapter.nameSimple} [${chapter.chapterNumber}]`,
-        description: `${info ? info.shortText : ''} This Surah has ${chapter.versesCount} verses and resides between pages ${chapter.pages[0]} to ${chapter.pages[1]} in the Quran.` // eslint-disable-line max-len
+        description: `${
+          chapterInfo ? chapterInfo.shortText : ''
+        } This Surah has ${
+          chapter.versesCount
+        } verses and resides between pages ${chapter.pages[0]} to ${
+          chapter.pages[1]
+        } in the Quran.`, // eslint-disable-line max-len
       })}
       script={[
         {
@@ -46,11 +49,15 @@ const ChapterInfo = ({ chapter, info }) => (
               "name": "${chapter.nameSimple}"
             }
           }]
-        }`
-        }
+        }`,
+        },
       ]}
     />
-    <SurahInfo chapter={chapter} info={info} isShowingSurahInfo />
+    <ChapterInfoPanel
+      chapter={chapter}
+      chapterInfo={chapterInfo}
+      isShowingChapterInfo
+    />
     <div className="text-center">
       <Button href={`/${chapter.id}`}>
         <LocaleFormattedMessage
@@ -63,23 +70,17 @@ const ChapterInfo = ({ chapter, info }) => (
 );
 
 ChapterInfo.propTypes = {
-  chapter: customPropTypes.surahType,
-  info: customPropTypes.infoType
+  chapter: customPropTypes.chapterType,
+  chapterInfo: customPropTypes.infoType,
 };
 
-const AsyncChapterInfo = asyncConnect([
-  { promise: chaptersConnect },
-  { promise: chapterInfoConnect }
-])(ChapterInfo);
-
 function mapStateToProps(state, ownProps) {
-  const chapterId = parseInt(ownProps.params.chapterId, 10);
-  const chapter: Object = state.chapters.entities[chapterId];
+  const chapterId = parseInt(ownProps.match.params.chapterId, 10);
 
   return {
-    chapter,
-    info: state.chapters.infos[chapterId]
+    chapter: state.chapters.entities[chapterId],
+    chapterInfo: state.chapterInfos.entities[chapterId],
   };
 }
 
-export default connect(mapStateToProps)(AsyncChapterInfo);
+export default connect(mapStateToProps)(ChapterInfo);

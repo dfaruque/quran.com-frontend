@@ -1,4 +1,4 @@
-import { PropTypes } from 'react';
+import PropTypes from 'prop-types';
 
 export const bookmarkActions = PropTypes.shape({
   isLoaded: PropTypes.func.isRequired,
@@ -92,7 +92,7 @@ export const location = PropTypes.shape({
 
 export const optionsType = PropTypes.shape({
   isReadingMode: PropTypes.bool,
-  isShowingSurahInfo: PropTypes.bool,
+  isShowingChapterInfo: PropTypes.bool,
   audio: PropTypes.number,
   quran: PropTypes.number,
   content: PropTypes.arrayOf(PropTypes.number),
@@ -106,7 +106,7 @@ export const recitationTypes = PropTypes.shape({
   reciter_name_eng: PropTypes.string
 });
 
-export const surahType = PropTypes.shape({
+export const chapterType = PropTypes.shape({
   id: PropTypes.number.isRequired,
   versesCount: PropTypes.number.isRequired,
   bismillahPre: PropTypes.bool.isRequired,
@@ -116,6 +116,12 @@ export const surahType = PropTypes.shape({
   nameComplex: PropTypes.string.isRequired,
   nameSimple: PropTypes.string.isRequired,
   nameArabic: PropTypes.string.isRequired
+});
+
+export const juzType = PropTypes.shape({
+  id: PropTypes.number.isRequired,
+  juzNumber: PropTypes.number.isRequired,
+  verseMapping: PropTypes.object.isRequired
 });
 
 export const timeInterval = PropTypes.shape({
@@ -207,11 +213,13 @@ export const segmentType = PropTypes.shape({
   intervals: PropTypes.oneOfType([PropTypes.array, PropTypes.object]) // TODO: This should be done a better way.
 });
 
-export const segments = PropTypes.objectOf(segmentType);
+export const segments = PropTypes.arrayOf(segmentType);
 
 export const match = PropTypes.arrayOf(matchType);
 
-export const chapters = PropTypes.objectOf(surahType);
+export const chapters = PropTypes.objectOf(chapterType);
+
+export const juzs = PropTypes.objectOf(juzType);
 
 export const line = PropTypes.arrayOf(wordType);
 

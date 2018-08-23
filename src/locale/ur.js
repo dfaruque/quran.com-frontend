@@ -3,8 +3,9 @@ export default {
   messages: {
     local: 'urdu',
     'local.siteLocale': 'سائٹ کی زبان',
-    'local.changeLocal': 'جس زبان میں سایٹ دیکہنا چاہتے ہیں اس زبان کا انتخاب کریں',
-    'local.navtiveName': 'اردو',
+    'local.changeLocal':
+      'جس زبان میں سایٹ دیکھنا چاہتے ہیں اس زبان کا انتخاب کریں',
+    'local.nativeName': 'اردو',
     'local.selectLabel': 'زبان',
     'setting.title': 'اختیارات',
     'setting.chapters': 'سورة',
@@ -28,10 +29,11 @@ export default {
     'ayah.media.lectureFrom': 'کے لیکچر دیکھے  {from}',
     'ayah.bookmarked': 'حوالہ ہے',
     'ayah.bookmark': 'حوالہ',
-    'ayah.notFound': 'آیت نہیں ملا',
+    'ayah.notFound': 'آیت نہیں ملی۔',
 
     'search.placeholder': 'تلاش کر یں',
-    'search.resultHeading': '{from}-{to} OF <span> {total} </span> SEARCH RESULTS FOR: <span>{query}</span>', // eslint-disable-line max-len
+    'search.resultHeading':
+      '{from}-{to} OF <span> {total} </span> SEARCH RESULTS FOR: <span>{query}</span>', // eslint-disable-line max-len
     'search.error': 'معذرت، آپ کی تلاش کے ساتھ ایک خرابی پیش آگئی ہے',
     'search.nothing': 'تلاش کے لئے کچھ لکھئے',
     'search.noResult': 'کوئی نتیجہ نہیں ملا',
@@ -55,7 +57,7 @@ export default {
     'player.repeat.rangeEnd': 'تک',
     'player.repeat.times': 'کتنی بار',
     'player.repeat.loop': 'چلاتے رہو',
-    'player.scrollButtonTip': 'جو آیت چل رہیی ہو اس کو  صفہ پر سامنے رکھو',
+    'player.scrollButtonTip': 'جو آیت چل رہی ہو اس کو  صفہ پر سامنے رکھو',
 
     'app.loading': 'لوڈ ہو رہا ہے',
     'actions.copy': 'کاپی',
@@ -72,14 +74,21 @@ export default {
     'nav.otherLinks': 'دیگر لنکس',
     'nav.contactUs': 'ہم سے رابطہ',
     'nav.help': 'مدد اور تاثرات',
-    'nav.aboutQuranProject': 'قرآن کریم ایک فلاح عامہ (عوامی بہبود کے لئے) منصوبہ ہے',
+    'nav.aboutQuranProject':
+      'قرآن کریم ایک فلاح عامہ (عوامی بہبود کے لئے) منصوبہ ہے',
     'nav.rightsReserved': 'جملہ حقوق محفوظ ہیں',
     'nav.mobile': 'موبائل',
     'nav.navigate': 'تشریف لے جائیں',
     'nav.legacySite': 'پرانی سائٹ',
+    'nav.blog': 'بلاگ',
 
-    'login.message': 'Quran.com کرنے کیلئے سائن ان سب کو اپنے بک مارکس، نوٹوں اور سرگرمیوں کو ذخیرہ کرنے.',
-    'error.invalid-surah': "سورہ رینج سے باہر ہے. براہ مہربانی <a href='/'> صفحۂ اول</a> پر جائیں اور درست سوره منتخب کریں",
-    'error.invalid-ayah': "آیت رینج سے باہر ہے. براہ مہربانی <a href='/'> صفحۂ اول</a> پر جائیں اور درست سوره/آیت منتخب کریں"
+    'juz.index.heading': 'سپارے',
+
+    'login.message':
+      'Quran.com کرنے کیلئے سائن ان سب کو اپنے بک مارکس، نوٹوں اور سرگرمیوں کو ذخیرہ کرنے.',
+    'error.invalid-surah':
+      "سورہ رینج سے باہر ہے. براہ مہربانی <a href='/'> صفحۂ اول</a> پر جائیں اور درست سوره منتخب کریں",
+    'error.invalid-ayah':
+      "آیت رینج سے باہر ہے. براہ مہربانی <a href='/'> صفحۂ اول</a> پر جائیں اور درست سوره/آیت منتخب کریں"
   }
 };

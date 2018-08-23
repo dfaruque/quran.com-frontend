@@ -1,45 +1,56 @@
-import React, { Component, PropTypes } from 'react';
-import Link from 'react-router/lib/Link';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import SearchInput from 'components/SearchInput';
-import debug from 'helpers/debug';
-import Jumbotron from 'quran-components/lib/Jumbotron';
+import styled from 'styled-components';
 
-const logo = require('../../../static/images/logo-lg-w.png');
-const styles = require('./style.scss');
+import backgroundImage from '../../../static/images/background.jpg';
+import logo from '../../../static/images/logo-lg-w.png';
 
-class IndexHeader extends Component {
+const StyledLink = styled(Link)`
+  display: inline-block;
+  width: 30%;
+  margin-top: 35px;
+`;
 
-  renderSearch() {
-    if (this.props.noSearch) {
-      return null;
-    }
+const Logo = styled.img`
+  padding-top: 10px;
+  padding-bottom: 10px;
+  height: auto;
+  width: 100%;
+`;
 
-    return (
-      <SearchInput />
-    );
-  }
+const Title = styled.h4`
+  color: ${props => props.theme.colors.white};
+  font-size: 160%;
+  padding-bottom: 3.5%;
+`;
 
-  render() {
-    debug('component:IndexHeader', 'Render');
+const Container = styled.div`
+  text-align: center;
+  background-color: ${props => props.theme.brandPrimary || '#2CA4AB'};
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 1rem 0rem;
+  color: #fff;
+`;
 
-    return (
-      <Jumbotron>
-        <div className="container">
-          <div className="row">
-            <div className="col-md-10 col-md-offset-1 text-center">
-              <Link to="/" className={styles.link} data-metrics-event-name="IndexHeader:Link:Index">
-                <img src={logo} className={styles.logo} alt="logo" />
-              </Link>
-              <h4 className={styles.title}>THE NOBLE QUR&#x27;AN</h4>
-              {this.renderSearch()}
-            </div>
-          </div>
+const IndexHeader = props => (
+  <Container style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <div className="container">
+      <div className="row">
+        <div className="col-md-10 col-md-offset-1 text-center">
+          <StyledLink to="/" data-metrics-event-name="IndexHeader:Link:Index">
+            <Logo src={logo} alt="logo" />
+          </StyledLink>
+          <Title>THE NOBLE QURAN</Title>
+          {!props.noSearch && <SearchInput />}
         </div>
-      </Jumbotron>
-
-    );
-  }
-}
+      </div>
+    </div>
+  </Container>
+);
 
 IndexHeader.propTypes = {
   noSearch: PropTypes.bool

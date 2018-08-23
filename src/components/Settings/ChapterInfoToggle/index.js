@@ -1,11 +1,12 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import LocaleFormattedMessage from 'components/LocaleFormattedMessage';
 import { MenuItem } from 'quran-components/lib/Menu';
 
 const InformationToggle = ({ isToggled, onToggle }) => (
   <MenuItem
     icon={<i className="ss-icon ss-info vertical-align-middle" />}
-    onClick={() => onToggle({ isShowingSurahInfo: !isToggled })}
+    onClick={() => onToggle({ isShowingChapterInfo: !isToggled })}
   >
     <LocaleFormattedMessage id="surah.info" defaultMessage="Surah Info" />
   </MenuItem>
